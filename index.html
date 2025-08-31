@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scouter Log Maker v7.1</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- UI fonts (app chrome only) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet" />
+  
+  <!-- 분리된 CSS 파일을 연결합니다. -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="p-4 md:p-8">
+  <div class="max-w-7xl mx-auto">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl scouter-font" style="color: var(--primary-color); text-shadow: 0 0 10px var(--primary-color);">SCOUTER LOG MAKER v7.1</h1>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+      <!-- ===== Control Panel ===== -->
+      <div class="scouter-panel rounded-lg p-6 space-y-6 overflow-y-auto max-h-[85vh]">
+
+        <!-- Character Info -->
+        <fieldset class="border border-[var(--primary-color)] p-4 rounded-md">
+          <legend class="scouter-font px-2 text-lg">Character Info</legend>
+          <div class="grid grid-cols-5 gap-4 items-center">
+           
+            <div class="col-span-4 space-y-2">
+              <div>
+                <label for="char-name" class="block text-sm font-medium scouter-label">캐릭터 이름</label>
+                <input type="text" id="char-name" class="mt-1 block w-full scouter-input rounded-md p-2" value="CHARACTER" />
+              </div>
+
+              <div>
+                <label for="char-image" class="block text-sm font-medium scouter-label">캐릭터 이미지</label>
+                <div class="flex gap-2 items-center mt-1">
+                  <input type="file" id="char-image" accept="image/*" class="hidden" />
+                  <button id="upload-btn" class="scouter-button text-xs px-3 py-2 rounded-md">Upload</button>
+                    <input type="text" id="file-name" 
+                           class="flex-1 text-sm scouter-input rounded-md" 
+                           placeholder="No file chosen" disabled />
+                  <button id="clear-image-btn" 
+                          class="text-xs scouter-button px-3 py-2 rounded-md h-full">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-span-1 flex justify-center">
+              <img id="image-preview" 
+                   src="https://placehold.co/100x100/333/3f3&text=PREVIEW" 
+                   alt="Image Preview" 
+                   class="w-24 h-24 object-cover rounded-full border-2 border-[var(--primary-color)]" />
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Design & Style -->
+        <fieldset class="border border-[var(--primary-color)] p-4 rounded-md">
+          <legend class="flex justify-between items-center scouter-font px-2 text-lg">
+            <span>Design & Style</span>
+            <button id="apply-style-btn" class="scouter-button px-3 py-1 text-xs rounded-md ml-3">Apply</button>
+          </legend>
+          <div class="space-y-4">
+            <!-- One-line color pickers -->
+            <div class="grid grid-cols-3 gap-3 items-end">
+              <div><label for="bg-color" class="block text-xs font-medium scouter-label">페이지 배경</label><input type="color" id="bg-color" value="#FAFAFA" class="mt-1 w-full h-8 rounded-md" /></div>
+              <div><label for="text-color" class="block text-xs font-medium scouter-label">본문 글자</label><input type="color" id="text-color" value="#262626" class="mt-1 w-full h-8 rounded-md" /></div>
+              <div><label for="highlight-color" class="block text-xs font-medium scouter-label">지문 하이라이트</label><input type="color" id="highlight-color" value="#FFF1A7" class="mt-1 w-full h-8 rounded-md" /></div>
+            </div>
+
+            <!-- Container dims -->
+            <div class="grid grid-cols-2 gap-4">
+              <div><label for="container-width" class="block text-sm font-medium scouter-label">컨테이너 가로 (px)</label><input type="number" id="container-width" value="800" class="mt-1 block w-full scouter-input rounded-md p-2" /></div>
+              <div><label for="log-height" class="block text-sm font-medium scouter-label">컨테이너 세로 (px)</label><input type="number" id="log-height" value="500" class="mt-1 block w-full scouter-input rounded-md p-2" /></div>
+            </div>
+
+            <!-- Typography -->
+            <div class="grid grid-cols-3 gap-4">
+              <div><label for="font-size" class="block text-sm font-medium scouter-label">글자 크기 (px)</label><input type="number" id="font-size" value="14" class="mt-1 block w-full scouter-input rounded-md p-2" /></div>
+              <div><label for="line-height" class="block text-sm font-medium scouter-label">줄 간격 (배수)</label><input type="number" id="line-height" value="1.5" step="0.1" class="mt-1 block w-full scouter-input rounded-md p-2" /></div>
+              <div><label for="letter-spacing" class="block text-sm font-medium scouter-label">자간 (em)</label><input type="number" id="letter-spacing" value="-0.03" step="0.01" class="mt-1 block w-full scouter-input rounded-md p-2" /></div>
+            </div>
+
+            <!-- Fonts -->
+            <div class="space-y-2" id="custom-font-wrap">
+              <label class="block text-sm font-medium scouter-label">폰트</label>
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                <select id="font-select" class="scouter-select rounded-md p-2 w-full">
+                  <option value="Pretendard">Pretendard (기본)</option>
+                  <option value="Noto Sans KR">Noto Sans KR</option>
+                  <option value="Noto Serif KR">Noto Serif KR</option>
+                  <option value="Gowun Dodum">Gowun Dodum</option>
+                  <option value="IBM Plex Sans KR">IBM Plex Sans KR</option>
+                  <option value="__custom">+ Custom (Google Fonts)</option>
+                </select>
+                <input id="custom-font-url" type="text" class="scouter-input rounded-md p-2 w-full" placeholder="https://fonts.googleapis.com/css2?family=Your+Font:wght@400;700&display=swap" />
+                <div class="flex gap-2">
+                  <input id="custom-font-family" type="text" class="scouter-input rounded-md p-2 w-full" placeholder="Ex; 'Your Font', serif" />
+                  <button id="use-custom-font-btn" class="scouter-button px-2 py-1 text-xs rounded-md whitespace-nowrap">Use</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Additional Options -->
+        <fieldset class="border border-[var(--primary-color)] p-4 rounded-md">
+          <legend class="scouter-font px-2 text-lg">Additional Options</legend>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="scouter-label">나레이션 기울임꼴</span>
+              <label class="switch"><input type="checkbox" id="narr-italic" /><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="scouter-label">나레이션 인용선 사용</span>
+              <label class="switch"><input type="checkbox" id="narr-quote" /><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="scouter-label">대사 볼드 처리</span>
+              <label class="switch"><input type="checkbox" id="speech-bold" /><span class="slider"></span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Management -->
+        <fieldset class="border border-[var(--primary-color)] p-4 rounded-md">
+          <legend class="scouter-font px-2 text-lg">Management</legend>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+            <button id="save-preset-btn" class="scouter-button p-2 rounded-md whitespace-nowrap">프리셋 저장</button>
+            <button id="load-preset-btn" class="scouter-button p-2 rounded-md whitespace-nowrap">프리셋 불러오기</button>
+            <button id="reset-all-btn" class="scouter-button danger p-2 rounded-md whitespace-nowrap col-span-2 md:col-span-1">전체 초기화</button>
+          </div>
+          <input type="file" id="preset-file-input" class="hidden" accept=".json" />
+        </fieldset>
+
+        <!-- Chat Input -->
+        <fieldset class="border border-[var(--primary-color)] p-4 rounded-md">
+          <legend class="scouter-font px-2 text-lg">Chat Input</legend>
+          <div class="text-xs text-gray-400 p-2 mb-2 rounded bg-black/30">
+            <p class="font-bold mb-1">입력 형식 안내:</p>
+            <ul class="list-disc list-inside">
+              <li>대사: "큰따옴표" 또는 “둥근따옴표” 로 감싸기</li>
+              <li>나레이션: 따옴표 없이 입력</li>
+              <li>마크다운: <strong>**굵게**</strong>, <em>*기울임*</em>, <strong><em>***굵은기울임***</em></strong>, ^하이라이트^, $강조$</li>
+            </ul>
+          </div>
+          <textarea id="chat-input" rows="10" class="w-full scouter-textarea rounded-md p-2" placeholder='"He ducked, laughing..." “Too slow!”'></textarea>
+        </fieldset>
+      </div>
+
+      <!-- ===== Preview & Result ===== -->
+      <div class="space-y-5 h-full flex flex-col">
+        <div class="scouter-panel rounded-lg p-2 md:p-4 flex-1">
+          <div id="preview-container" class="w-full h-full overflow-y-auto rounded-md bg-gray-200">
+            <iframe style="width:100%; height:100%; border:0;"></iframe>
+          </div>
+        </div>
+        <div class="scouter-panel rounded-lg p-6 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button id="copy-btn" class="scouter-button p-2 rounded-md w-full">전체 HTML 복사</button>
+            <button id="save-btn" class="scouter-button p-2 rounded-md w-full">전체 HTML 저장</button>
+            <div class="flex">
+              <input id="import-file" type="file" accept=".html,.htm,.txt" class="hidden" />
+              <button id="import-btn" class="scouter-button p-2 rounded-md w-full">HTML 불러오기</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button id="generate-btn" class="scouter-button primary p-2 rounded-md">새 로그 생성</button>
+            <button id="add-to-log-btn" class="scouter-button p-2 rounded-md">로그에 추가하기</button>
+          </div>
+
+          <fieldset class="border border-[var(--primary-color)] p-4 rounded-md">
+            <legend class="scouter-font px-2 text-lg">Last Generated Block HTML</legend>
+            <textarea id="html-output" class="w-full h-40 scouter-textarea rounded-md p-2 text-xs" placeholder="여기에 생성/불러온 HTML 본문이 표시되고, 직접 수정하면 프리뷰에 반영됩니다."></textarea>
+          </fieldset>
+        </div>
+
+        <div id="toast-message" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">복사되었습니다!</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 분리된 JavaScript 파일을 연결합니다. defer 속성은 HTML 로딩이 끝난 후 스크립트를 실행시켜 줍니다. -->
+  <script src="script.js" defer></script>
+</body>
+</html>

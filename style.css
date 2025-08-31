@@ -1,0 +1,174 @@
+:root {
+    --primary-color: #3f3;
+    --bg-color: #1a1a1a;
+    --panel-bg-color: rgba(30, 40, 30, 0.8);
+    --text-color: #f0f0f0;
+    --border-color: rgba(63, 255, 63, 0.3);
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(to right, var(--border-color) 1px, var(--bg-color) 1px);
+    background-size: 20px 20px;
+}
+
+.scouter-font {
+    font-family: 'Orbitron', sans-serif;
+}
+
+.scouter-panel {
+    background-color: var(--panel-bg-color);
+    border: 1px solid var(--primary-color);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 15px rgba(63, 255, 63, 0.2);
+}
+
+.scouter-input,
+.scouter-select,
+.scouter-textarea {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
+    transition: all .25s ease;
+}
+
+.scouter-input:focus,
+.scouter-select:focus,
+.scouter-textarea:focus {
+    outline: none;
+    box-shadow: 0 0 10px var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.scouter-button {
+    font-family: 'Orbitron', sans-serif;
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    transition: all .2s ease;
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+.scouter-button:hover:not(:disabled) {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    text-shadow: none;
+}
+
+.scouter-button.primary {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+}
+
+.scouter-button.danger {
+    border-color: #f44336;
+    color: #f44336;
+}
+
+.scouter-button.danger:hover:not(:disabled) {
+    background-color: #f44336;
+    color: #fff;
+}
+
+.scouter-label {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--panel-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: rgba(0, 0, 0, .5);
+    border: 1px solid var(--primary-color);
+    transition: .2s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--primary-color);
+    transition: .2s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--primary-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+    background-color: var(--bg-color);
+}
+
+.scouter-input,
+.scouter-select,
+.scouter-textarea {
+    font-size: 0.8125rem !important;
+    /* 13px (sm 14px보다 살짝 작음) */
+    padding: 0.375rem 0.625rem !important;
+    /* 상하 6px, 좌우 10px */
+}
+
+.scouter-button {
+    font-size: 0.8125rem !important;
+    padding: 0.375rem 0.625rem !important;
+}
+
+/* -------- Preview Content (inside iframe) -------- */
+.instagram__content p {
+    margin: 0 0 .5em 0;
+    white-space: pre-wrap;
+}
+
+/* preserve spaces & linebreaks */
+.speech {
+    font-weight: 500;
+}
+
+.narration.italic {
+    font-style: italic;
+}
+
+.narration.quoted {
+    padding-left: 1em;
+    border-left: 3px solid #e0e0e0;
+    color: #8e8e8e;
+}
+
+.highlight {
+    background: #FFF1A7;
+}
