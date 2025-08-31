@@ -1,6 +1,3 @@
-// NOTE: HTML 파일에서 'defer' 속성으로 script를 불러오므로,
-// DOMContentLoaded 이벤트 리스너는 더 이상 필요하지 않습니다.
-
 const controls = {
     charName: document.getElementById('char-name'),
     charImage: document.getElementById('char-image'),
@@ -278,7 +275,8 @@ controls.htmlOutput.addEventListener('input', () => {
 
 document.getElementById('use-custom-font-btn').addEventListener('click', () => {
     if (!controls.customFontUrl.value || !controls.customFontFamily.value) {
-        alert('Custom 폰트 URL과 Font Family를 모두 입력해주세요.');
+        // alert() is blocked, use console.log or a custom modal instead.
+        console.log('Custom 폰트 URL과 Font Family를 모두 입력해주세요.');
         return;
     }
     controls.fontSelect.value = '__custom';
@@ -322,7 +320,10 @@ function savePresetToFile() {
         customFontUrl: controls.customFontUrl.value,
         customFontFamily: controls.customFontFamily.value,
         narrItalic: controls.narrItalic.checked,
-        narrQuote: controls.narrQuote.checked
+        narrQuote: controls.narrQuote.checked,
+        speechBold: controls.speechBold.checked,
+        // BUGFIX: Save image URL to preset
+        charImageUrl: charImageUrl
     };
     const blob = new Blob([JSON.stringify(preset, null, 2)], {
         type: 'application/json'
@@ -350,9 +351,23 @@ presetFileInput.addEventListener('change', (event) => {
                 if (el.type === 'checkbox') el.checked = !!v;
                 else el.value = v;
             });
+            
+            // BUGFIX: Load image URL from preset
+            if (s.charImageUrl) {
+                charImageUrl = s.charImageUrl;
+                controls.imagePreview.src = charImageUrl;
+                controls.fileName.value = '프리셋 이미지';
+            } else {
+                // If preset has no image, reset to placeholder
+                charImageUrl = PLACEHOLDER_IMAGE;
+                controls.imagePreview.src = PLACEHOLDER_IMAGE;
+                controls.charImage.value = '';
+                controls.fileName.value = 'No file chosen';
+            }
+
             applyStyles();
         } catch (err) {
-            alert('잘못된 프리셋 파일입니다.');
+            console.error('잘못된 프리셋 파일입니다.', err);
         }
     };
     reader.readAsText(file);
@@ -367,7 +382,7 @@ buttons.copy.addEventListener('click', () => {
 });
 buttons.save.addEventListener('click', () => {
     if (!currentFullHtml) {
-        alert('저장할 로그가 없습니다.');
+        console.log('저장할 로그가 없습니다.');
         return;
     }
     const a = document.createElement('a');
@@ -385,13 +400,10 @@ buttons.applyStyle.addEventListener('click', applyStyles);
 buttons.savePreset?.addEventListener('click', savePresetToFile);
 buttons.loadPreset?.addEventListener('click', loadPresetFromFile);
 
+// BUGFIX: Activate the reset button
 buttons.resetAll?.addEventListener('click', () => {
-    if (confirm('정말 모든 설정을 초기화하시겠습니까?')) {
-        // 이 부분은 원본 파일에 없었으나, 추가하면 좋을 기능입니다.
-        // 필요시 아래 주석을 해제하고 기본값을 설정하세요.
-        // location.reload(); 
-        alert('기능이 구현되지 않았습니다. 페이지를 새로고침해주세요.');
-    }
+    // Reloading the page is the simplest and most effective way to reset all settings.
+    location.reload();
 });
 
 
@@ -403,3 +415,4 @@ function toast(msg) {
     t.classList.remove('opacity-0');
     setTimeout(() => t.classList.add('opacity-0'), 1500);
 }
+
