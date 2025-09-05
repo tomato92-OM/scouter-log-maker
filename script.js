@@ -49,7 +49,7 @@ const RE = {
     italic: /\*(.*?)\*/g,
     highlight: /\^(.*?)\^/g,
     spaced: /\$(.*?)\$/g,
-    quoted: /"(.*?)"|â€œ(.*?)â€/g
+    quoted: /"(.*?)"|"(.*?)"/g
 };
 
 function fmt(text) {
@@ -109,6 +109,7 @@ function getFontFamily() {
 
 function buildHead() {
     const fontFamily = getFontFamily();
+    const speechFontWeight = controls.speechBold.checked ? 'bold' : 'normal';
     
     const css = `
           :root{--main-bg-color:#fff; --sub-bg-color:#fafafa; --main-border-color:#efefef; --sub-border-color:#dbdbdb;
@@ -138,7 +139,7 @@ function buildHead() {
           .instagram__content::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.2); border-radius:3px}
           .highlight{background-color:${controls.highlightColor.value}}
           .spaced-out{letter-spacing:.2em; display:inline-block}
-          .speech{font-weight:${controls.speechBold.checked ? '700' : 'inherit'}; font-family:${fontFamily}}
+          .speech{font-weight:${speechFontWeight}; font-family:${fontFamily}}
           .narration{font-family:${fontFamily}}
           .narration.italic{font-style:italic}
           .narration.quoted{padding-left:1em; border-left:3px solid #e0e0e0; color:#8e8e8e}
@@ -210,7 +211,7 @@ function buildBlockFromChat() {
                 if (t.trim() === '') continue;
                 html += `<p class="${narrationClasses()}">${fmt(t)}</p>`;
             } else {
-                html += `<p class="speech">â€œ${fmt(p.text)}â€</p>`;
+                html += `<p class="speech">"${fmt(p.text)}"</p>`;
             }
         }
     }
@@ -222,7 +223,7 @@ function buildBlockFromChat() {
       <div class="instagram__post-header">
         <div class="instagram__profile"><div class="instagram__profile-inner">${profileImgTag}</div></div>
         <div class="instagram__user-info"><div class="instagram__username">${controls.charName.value || 'CHARACTER'}</div></div>
-        <div class="instagram__menu">â‹¯</div>
+        <div class="instagram__menu">⋯</div>
       </div>
       <div class="instagram__image-container"><div class="instagram__portrait">${profileImgTag}</div></div>
     </div>
@@ -245,13 +246,18 @@ function updatePreviewFromBody(bodyHtml) {
                 try {
                     const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
                     const fontFamily = getFontFamily();
+                    const speechFontWeight = controls.speechBold.checked ? 'bold' : 'normal';
                     
                     // CSS를 통해 폰트 강제 적용
                     const style = iframeDoc.createElement('style');
                     style.textContent = `
                         body, .instagram__content, .instagram__content p, 
-                        .instagram__username, .speech, .narration {
+                        .instagram__username, .narration {
                             font-family: ${fontFamily} !important;
+                        }
+                        .speech {
+                            font-family: ${fontFamily} !important;
+                            font-weight: ${speechFontWeight} !important;
                         }
                     `;
                     iframeDoc.head.appendChild(style);
