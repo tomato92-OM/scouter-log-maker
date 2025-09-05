@@ -233,9 +233,34 @@ function buildBlockFromChat() {
 
 function updatePreviewFromBody(bodyHtml) {
     currentFullHtml = wrapFull(bodyHtml);
+    
+    // iframe이 완전히 로드된 후 폰트가 적용되도록 약간의 지연 추가
     requestAnimationFrame(() => {
         previewFrame.removeAttribute('src');
         previewFrame.srcdoc = currentFullHtml;
+        
+        // iframe 로드 완료 후 폰트 재적용을 위한 추가 처리
+        previewFrame.onload = () => {
+            setTimeout(() => {
+                try {
+                    const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+                    const fontFamily = getFontFamily();
+                    
+                    // CSS를 통해 폰트 강제 적용
+                    const style = iframeDoc.createElement('style');
+                    style.textContent = `
+                        body, .instagram__content, .instagram__content p, 
+                        .instagram__username, .speech, .narration {
+                            font-family: ${fontFamily} !important;
+                        }
+                    `;
+                    iframeDoc.head.appendChild(style);
+                } catch (e) {
+                    // Cross-origin 오류 방지를 위한 예외 처리
+                    console.log('Font reapplication skipped due to cross-origin restrictions');
+                }
+            }, 500); // 500ms 후 폰트 재적용
+        };
     });
 }
 
