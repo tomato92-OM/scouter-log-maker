@@ -49,7 +49,7 @@ const RE = {
     italic: /\*(.*?)\*/g,
     highlight: /\^(.*?)\^/g,
     spaced: /\$(.*?)\$/g,
-    quoted: /"(.*?)"|“(.*?)”/g
+    quoted: /"(.*?)"|â€œ(.*?)â€/g
 };
 
 function fmt(text) {
@@ -71,8 +71,8 @@ function narrationClasses() {
 
 function getFontLinks() {
     const sel = controls.fontSelect.value;
-    if (sel === '__custom' && controls.customFontUrl.value) {
-        return `<link href="${controls.customFontUrl.value}" rel="stylesheet">`;
+    if (sel === '__custom' && controls.customFontUrl.value.trim()) {
+        return `<link href="${controls.customFontUrl.value.trim()}" rel="stylesheet">`;
     }
     const map = {
         'Pretendard': '<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">',
@@ -85,19 +85,35 @@ function getFontLinks() {
 }
 
 function getFontFamily() {
-    if (controls.fontSelect.value === '__custom') {
-        return controls.customFontFamily.value || "'Noto Sans KR', sans-serif";
+    const sel = controls.fontSelect.value;
+    if (sel === '__custom') {
+        const customFamily = controls.customFontFamily.value.trim();
+        if (customFamily) {
+            // 사용자가 입력한 폰트 패밀리를 그대로 사용 (따옴표 포함 여부 상관없이)
+            return customFamily;
+        }
+        return "'Noto Sans KR', sans-serif";
     }
-    const fam = controls.fontSelect.value;
-    const generic = fam.includes('Serif') ? 'serif' : 'sans-serif';
-    return `'${fam}', ${generic}`;
+    
+    // 기본 폰트들의 경우
+    const fontMap = {
+        'Pretendard': '"Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif',
+        'Noto Sans KR': '"Noto Sans KR", sans-serif',
+        'Noto Serif KR': '"Noto Serif KR", serif',
+        'Gowun Dodum': '"Gowun Dodum", sans-serif',
+        'IBM Plex Sans KR': '"IBM Plex Sans KR", sans-serif'
+    };
+    
+    return fontMap[sel] || '"Noto Sans KR", sans-serif';
 }
 
 function buildHead() {
+    const fontFamily = getFontFamily();
+    
     const css = `
           :root{--main-bg-color:#fff; --sub-bg-color:#fafafa; --main-border-color:#efefef; --sub-border-color:#dbdbdb;
             --main-text-color:${controls.textColor.value}; --sub-text-color:#8e8e8e; --letter-spacing:${controls.letterSpacing.value}em; --image-container-width:40%; --text-container-padding:2rem;}
-          body{font-family:${getFontFamily()}; background:${controls.bgColor.value}; color:${controls.textColor.value};
+          body{font-family:${fontFamily}; background:${controls.bgColor.value}; color:${controls.textColor.value};
             font-size:${controls.fontSize.value}px; line-height:${controls.lineHeight.value}; padding:1rem 0; margin:0;}
           .log-container{max-width:${controls.containerWidth.value}px; margin:auto;}
           .instagram{display:block; max-width:100%; margin:0 auto 1rem auto; position:relative; box-sizing:border-box; background:var(--main-bg-color); border:1px solid var(--sub-border-color); border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,.08)}
@@ -108,21 +124,22 @@ function buildHead() {
           .instagram__profile-inner{width:38px; height:38px; border-radius:50%; background:#fff; overflow:hidden}
           .instagram__profile-inner img{width:100%; height:100%; object-fit:cover}
           .instagram__user-info{flex:1}
-          .instagram__username{font-size:14px; font-weight:bold; color:var(--main-text-color)}
+          .instagram__username{font-size:14px; font-weight:bold; color:var(--main-text-color); font-family:${fontFamily}}
           .instagram__menu{font-size:16px; color:#262626; padding:8px}
           .instagram__image-container{flex:1; position:relative; overflow:hidden; background:#f5f5f5}
           .instagram__portrait{width:100%; height:100%}
           .instagram__portrait img{width:100%; height:100%; object-fit:cover}
           .instagram__right{flex:1; display:flex; flex-direction:column; overflow:hidden}
-          .instagram__content{flex:1; padding:var(--text-container-padding); overflow-y:auto; color:var(--main-text-color); letter-spacing:var(--letter-spacing)}
-          .instagram__content p{margin:0 0 .5em 0; white-space:pre-wrap;}
+          .instagram__content{flex:1; padding:var(--text-container-padding); overflow-y:auto; color:var(--main-text-color); letter-spacing:var(--letter-spacing); font-family:${fontFamily}}
+          .instagram__content p{margin:0 0 .5em 0; white-space:pre-wrap; font-family:${fontFamily}}
           .instagram__content p:last-child{margin-bottom:0}
           .instagram__content::-webkit-scrollbar{width:6px}
           .instagram__content::-webkit-scrollbar-track{background:transparent}
           .instagram__content::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.2); border-radius:3px}
           .highlight{background-color:${controls.highlightColor.value}}
           .spaced-out{letter-spacing:.2em; display:inline-block}
-          .speech{font-weight:${controls.speechBold.checked ? '700' : 'inherit'}}
+          .speech{font-weight:${controls.speechBold.checked ? '700' : 'inherit'}; font-family:${fontFamily}}
+          .narration{font-family:${fontFamily}}
           .narration.italic{font-style:italic}
           .narration.quoted{padding-left:1em; border-left:3px solid #e0e0e0; color:#8e8e8e}
           @media (max-width:768px){body{padding:0}.log-container{max-width:100%}.instagram{border-radius:0; border-left:0; border-right:0}.instagram__main{flex-direction:column; height:auto}.instagram__left,.instagram__right{width:100%}.instagram__left{border-right:none; border-bottom:1px solid var(--main-border-color)}.instagram__image-container{aspect-ratio:1/1}.instagram__content{min-height:200px; padding:1rem}}
@@ -193,7 +210,7 @@ function buildBlockFromChat() {
                 if (t.trim() === '') continue;
                 html += `<p class="${narrationClasses()}">${fmt(t)}</p>`;
             } else {
-                html += `<p class="speech">“${fmt(p.text)}”</p>`;
+                html += `<p class="speech">â€œ${fmt(p.text)}â€</p>`;
             }
         }
     }
@@ -205,7 +222,7 @@ function buildBlockFromChat() {
       <div class="instagram__post-header">
         <div class="instagram__profile"><div class="instagram__profile-inner">${profileImgTag}</div></div>
         <div class="instagram__user-info"><div class="instagram__username">${controls.charName.value || 'CHARACTER'}</div></div>
-        <div class="instagram__menu">⋯</div>
+        <div class="instagram__menu">â‹¯</div>
       </div>
       <div class="instagram__image-container"><div class="instagram__portrait">${profileImgTag}</div></div>
     </div>
@@ -274,7 +291,7 @@ controls.htmlOutput.addEventListener('input', () => {
 });
 
 document.getElementById('use-custom-font-btn').addEventListener('click', () => {
-    if (!controls.customFontUrl.value || !controls.customFontFamily.value) {
+    if (!controls.customFontUrl.value.trim() || !controls.customFontFamily.value.trim()) {
         // alert() is blocked, use console.log or a custom modal instead.
         console.log('Custom 폰트 URL과 Font Family를 모두 입력해주세요.');
         return;
@@ -415,4 +432,3 @@ function toast(msg) {
     t.classList.remove('opacity-0');
     setTimeout(() => t.classList.add('opacity-0'), 1500);
 }
-
