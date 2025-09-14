@@ -49,7 +49,7 @@ const RE = {
     italic: /\*(.*?)\*/g,
     highlight: /\^(.*?)\^/g,
     spaced: /\$(.*?)\$/g,
-    quoted: /"(.*?)"|"(.*?)"|“(.*?)”/g
+    quoted: /"([^"]*)"|"([^"]*)"|"([^"]*)"/g
 };
 
 function fmt(text) {
@@ -463,3 +463,4 @@ function toast(msg) {
     t.classList.remove('opacity-0');
     setTimeout(() => t.classList.add('opacity-0'), 1500);
 }
+
