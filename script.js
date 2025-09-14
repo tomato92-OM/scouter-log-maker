@@ -49,7 +49,7 @@ const RE = {
     italic: /\*(.*?)\*/g,
     highlight: /\^(.*?)\^/g,
     spaced: /\$(.*?)\$/g,
-    quoted: /"(.*?)"|"(.*?)"/g
+    quoted: /"(.*?)"|"(.*?)"|“(.*?)”/g
 };
 
 function fmt(text) {
@@ -170,7 +170,7 @@ function splitLine(line) {
                 text: line.slice(last, start)
             });
         }
-        const inner = (m[1] !== undefined ? m[1] : m[2]) || '';
+        const inner = m[1] || m[2] || m[3] || '';
         parts.push({
             type: 'dial',
             text: inner
@@ -463,4 +463,3 @@ function toast(msg) {
     t.classList.remove('opacity-0');
     setTimeout(() => t.classList.add('opacity-0'), 1500);
 }
-
