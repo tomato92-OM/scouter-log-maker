@@ -49,7 +49,7 @@ const RE = {
     italic: /\*(.*?)\*/g,
     highlight: /\^(.*?)\^/g,
     spaced: /\$(.*?)\$/g,
-    quoted: /"(.*?)"|"(.*?)"|"(.*?)"/g
+    quoted: /"(.*?)"|"(.*?)"|"(.*?)"|„(.*?)"|‚(.*?)'/g
 };
 
 function fmt(text) {
